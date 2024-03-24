@@ -9,3 +9,32 @@ Arquivo Header
 
 Link do Bootstrap: 36:50
 https://getbootstrap.com/docs/5.3/forms/form-control/
+
+templates/index.html: 39:04
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('multiuso/header'); ?>
+  </head>
+  <body>
+    <div class='container-fluid'>
+      <div class='row' style='height: 100vh;'>
+        <div class='col-2'>
+          <?!= include('multiuso/menu_lateral'); ?>
+        </div>
+        <div class='col-10'>
+          <div class='row mt-3'>
+            <h5>Hospedagens</h5>
+          </div>
+          <div class='row'>
+            <div class='col-2'>
+              <label class="form-label">ID</label>
+              <input type="number" class="form-control">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
