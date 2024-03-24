@@ -35,3 +35,6 @@ function acha_maior_ID(nomeDaAba){
 $( document ).ready(function() {
     console.log( "ready!" );
 });
+
+4. Importar icones do bootstrap
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
