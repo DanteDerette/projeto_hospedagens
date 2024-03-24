@@ -29,3 +29,9 @@ function acha_maior_ID(nomeDaAba){
 
 }
 /////////////////////////////////////////////
+
+
+3. Aciona depois de carregar página
+$( document ).ready(function() {
+    console.log( "ready!" );
+});
