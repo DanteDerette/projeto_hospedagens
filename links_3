@@ -1,0 +1,4 @@
+1. função
+function coringa_backend(func, args){
+  return Backend[func](args)
+}
