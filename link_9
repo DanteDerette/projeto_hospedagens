@@ -1,0 +1,25 @@
+link_9 - Estrutura botão e tabela
+
+<div class='row mt-3 border-top'>
+  <div class='col-2 mt-2'>
+      <button class="btn btn-outline-secondary w-100" type="button" id="button-addon1" onclick='abre_dialog_escolhe_prestador()'>Escolher Prestador</button>
+    </div>
+</div>
+
+<div class='row'>
+  <div class='col'>
+    <table class='table'>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome do Prestador</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="2">Nenhum Prestado Selecionado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
