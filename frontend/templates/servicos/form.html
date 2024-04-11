@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('multiuso/header'); ?>
+  </head>
+  <body>
+    <div class='container-fluid'>
+      <div class='row' style='height: 100vh;'>
+        <div class='col-2'>
+          <?!= include('multiuso/menu_lateral'); ?>
+        </div>
+        <div class='col-10' id='form_servico'>
+          <div class='row mt-3'>
+            <h5>Serviços</h5>
+          </div>
+          <div class='row'>
+            <div class='col-2'>
+              <label class="form-label">ID</label>
+              <input type="number" name='id' class="form-control myInput">
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col-8'>
+              <label class="form-label">Nome do Serviço</label>
+              <input type="text" name='nome_do_servico' class="form-control myInput">
+            </div>
+            <div class='col-4'>
+              <label class="form-label">Valor do Serviço</label>
+              <input type="number" name='valor_do_servico' class="form-control myInput">
+            </div>
+          </div>
+          <div class='row mt-3'>
+            <div class='col-2'>
+              <a href='https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/servicos/table'>
+                <button type="button" class="btn btn-danger w-100">Cancelar</button>
+              </a>
+            </div>
+            <div class='col-8'></div>
+            <div class='col-2'>
+              <button type="button" class="btn btn-primary w-100" onclick="salvar_servico()">Salvar</button>
+            </div>
+          </div>
+          <div class='row mt-3'>
+            <div class='col'>
+              <div class="alert alert-success" role="alert" id='meu_alert' style='display: none;'>
+                Registro salvo com sucesso!
+              </div>
+            </div>
+          </div>
+          <script>
+            $(document).ready(function() {
+              if(<?= id; ?> != 0){
+                google.script.run.withSuccessHandler(function (retorno){
+                  document.getElementsByName("id")[0].value = retorno[0]
+                  document.getElementsByName("nome_do_servico")[0].value = retorno[1]
+                  document.getElementsByName("valor_do_servico")[0].value = retorno[2]
+                }).backend('ler_servico_especifica', <?= id; ?>)
+              }
+            });
+
+            function salvar_servico(){
+              var form_servico = document.getElementById("form_servico")
+              var myInput = form_servico.querySelectorAll(".myInput")
+              
+              var obj_para_lancar = {}
+
+              myInput.forEach((item)=>{
+                  obj_para_lancar[item.name] = item.value
+              })
+
+              google.script.run.withSuccessHandler(function (retorno){
+
+
+                document.getElementById("meu_alert").style.display = 'flex'
+
+                setTimeout(function (){
+                  var a = document.createElement("a")
+                  a.href = 'https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/servicos/table'
+                  document.getElementById("meu_alert").appendChild(a)
+                  a.click()
+
+                }, 2000);
+
+
+
+              }).backend('salvar_servico', obj_para_lancar)
+            }
+          </script>  
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

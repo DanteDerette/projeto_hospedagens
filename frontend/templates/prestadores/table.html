@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('multiuso/header'); ?>
+  </head>
+  <body>
+    <div class='container-fluid'>
+      <div class='row' style='height: 100vh;'>
+        <div class='col-2'>
+          <?!= include('multiuso/menu_lateral'); ?>
+        </div>
+        <div class='col-10'>
+          <div class='row mt-3'>
+            <h5>Prestadores de Serviço</h5>
+          </div>
+          <div class='row'>
+            <div class='col-2'>
+              <a href="https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/prestadores/form&id=0">
+                <button type="button" class="btn btn-light w-100" onclick=""><i class="bi bi-plus-circle"></i>&nbsp;Novo</button>
+              </a>
+            </div>
+            <div class='col-2'>
+              <button type="button" class="btn btn-light w-100" onclick="altera_linha_prestadores()"><i class="bi bi-pencil-square"></i>&nbsp;Alterar</button>
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col'>
+              <table class="table" id='table_prestador'>
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nome</th>                                  
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    $( document ).ready(function() {
+      gera_a_tabela()
+    });
+
+    function altera_linha_prestadores(){
+
+      var table_prestador = document.getElementById("table_prestador")
+      var tbody = table_prestador.getElementsByTagName("tbody")[0]
+      var table_primary = tbody.querySelectorAll(".table-primary")[0]
+      var id = table_primary.getElementsByTagName("td")[0].innerHTML
+
+      var a = document.createElement('a')
+      a.href = 'https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/prestadores/form&id=' + id.toString()
+      
+      document.getElementsByTagName("body")[0].appendChild(a)
+      a.click()
+    }
+
+    function gera_a_tabela(){
+      google.script.run.withSuccessHandler(function (retorno){
+        var dados = JSON.parse(retorno)
+        dados = dados.slice(1, dados.length)
+        var table_prestador = document.getElementById("table_prestador")
+        var tbody = table_prestador.getElementsByTagName("tbody")[0]
+        
+        dados.forEach((item) => {
+          var tr = document.createElement("tr")
+          tr.onclick = (e) => {
+            desmarca_a_selecao_da_linha(tbody)
+
+            var linha_clicada = e.currentTarget
+            linha_clicada.classList.add("table-primary")
+          }
+
+          var td = document.createElement("td")
+          td.innerHTML = item[0]
+          tr.appendChild(td)
+
+          var td = document.createElement("td")
+          td.innerHTML = item[1]
+          tr.appendChild(td)
+
+         
+          tbody.appendChild(tr)
+
+        })
+
+      }).backend('ler_todas_as_prestadores',)
+    }
+
+    function desmarca_a_selecao_da_linha(tbody){
+      var toda_as_tr = tbody.querySelectorAll("tr")
+      toda_as_tr.forEach((item) => {
+        item.classList.remove('table-primary')
+      })
+    }
+  </script>
+</html>
+
+
+
+

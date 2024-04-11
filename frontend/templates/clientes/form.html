@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('multiuso/header'); ?>
+  </head>
+  <body>
+    <div class='container-fluid'>
+      <div class='row' style='height: 100vh;'>
+        <div class='col-2'>
+          <?!= include('multiuso/menu_lateral'); ?>
+        </div>
+        <div class='col-10' id='form_prestador'>
+          <div class='row mt-3'>
+            <h5>Clientes</h5>
+          </div>
+          <div class='row'>
+            <div class='col-2'>
+              <label class="form-label">ID</label>
+              <input type="number" name='id' class="form-control myInput" readonly>
+            </div>
+          </div>
+          
+          
+          <div class='row'>
+            <div class='col-12'>
+              <label class="form-label">Nome do Cliente</label>
+              <input type="text" name='nome_do_cliente' class="form-control myInput">
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-6'>
+              <label class="form-label">Telefone do Cliente</label>
+              <input type="text" name='telefone_do_cliente' class="form-control myInput">
+            </div>
+          <!-- </div> -->
+          <!-- <div class='row'> -->
+            <div class='col-6'>
+              <label class="form-label">CPF do Cliente</label>
+              <input type="text" name='cpf_do_cliente' class="form-control myInput">
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-6'>
+              <label class="form-label">CEP do Cliente</label>
+              <input type="text" name='cep_do_cliente' class="form-control myInput">
+            </div>
+          <!-- </div> -->
+          <!-- <div class='row'> -->
+            <div class='col-6'>
+              <label class="form-label">Instagram</label>
+              <input type="text" name='instagram' class="form-control myInput">
+            </div>
+          </div>
+
+
+          <div class='row'>
+            <div class='col-6'>
+              <label class="form-label">E-mail do Cliente</label>
+              <input type="text" name='email_do_cliente' class="form-control myInput">
+            </div>
+          <!-- </div> -->
+          <!-- <div class='row'> -->
+            <div class='col-6'>
+              <label class="form-label">Data de Nascimento</label>
+              <input type="date" name='data_de_nascimento' class="form-control myInput">
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-12'>
+              <label class="form-label">Observação</label>
+              <input type="text" name='obs' class="form-control myInput">
+            </div>
+          </div>
+
+
+
+          <div class='row mt-3'>
+            <div class='col-2'>
+              <a href='https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/prestadores/table'>
+                <button type="button" class="btn btn-danger w-100">Cancelar</button>
+              </a>
+            </div>
+            <div class='col-8'></div>
+            <div class='col-2'>
+              <button type="button" class="btn btn-primary w-100" onclick="salvar_cliente()">Salvar</button>
+            </div>
+          </div>
+          <div class='row mt-3'>
+            <div class='col'>
+              <div class="alert alert-success" role="alert" id='meu_alert' style='display: none;'>
+                Registro salvo com sucesso!
+              </div>
+            </div>
+          </div>
+          <script>
+            $(document).ready(function() {
+              if(<?= id; ?> != 0){
+                google.script.run.withSuccessHandler(function (retorno){
+                  var retorno = JSON.parse(retorno)
+                  
+                  document.getElementsByName("id")[0].value = retorno[0]
+                  document.getElementsByName("nome_do_cliente")[0].value = retorno[1]
+                  document.getElementsByName("telefone_do_cliente")[0].value =retorno[2]
+                  document.getElementsByName("cpf_do_cliente")[0].value =retorno[3]
+                  document.getElementsByName("cep_do_cliente")[0].value = retorno[4]
+                  document.getElementsByName("instagram")[0].value = retorno[5]
+                  document.getElementsByName("email_do_cliente")[0].value = retorno[6]
+                  document.getElementsByName("data_de_nascimento")[0].value = retorno[7].slice(0, 10)
+                  document.getElementsByName("obs")[0].value = retorno[8]
+
+                }).backend('ler_cliente_especifica', <?= id; ?>)
+              }
+            });
+
+            function salvar_cliente(){
+              var form_prestador = document.getElementById("form_prestador")
+              var myInput = form_prestador.querySelectorAll(".myInput")
+              
+              var obj_para_lancar = {}
+
+              myInput.forEach((item)=>{
+                  obj_para_lancar[item.name] = item.value
+              })
+
+              google.script.run.withSuccessHandler(function (retorno){
+
+
+                document.getElementById("meu_alert").style.display = 'flex'
+
+                setTimeout(function (){
+                  var a = document.createElement("a")
+                  a.href = 'https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/clientes/table'
+                  document.getElementById("meu_alert").appendChild(a)
+                  a.click()
+
+                }, 2000);
+
+
+
+              }).backend('salvar_cliente', obj_para_lancar)
+            }
+          </script>  
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

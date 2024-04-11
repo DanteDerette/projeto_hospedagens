@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('multiuso/header'); ?>
+  </head>
+  <body>
+    <div class='container-fluid'>
+      <div class='row' style='height: 100vh;'>
+        <div class='col-2'>
+          <?!= include('multiuso/menu_lateral'); ?>
+        </div>
+        <div class='col-10' id='form_prestador'>
+          <div class='row mt-3'>
+            <h5>Serviços Prestados</h5>
+          </div>
+          <div class='row'>
+            <div class='col-2'>
+              <label class="form-label">ID</label>
+              <input type="number" name='id' class="form-control myInput" readonly>
+            </div>
+            <div class='col-2'>
+              <label class="form-label">Data da Prestação</label>
+              <input type="date" name='data_prestacao' class="form-control myInput">
+            </div>
+            <div class='col-8'>
+              <label class="form-label">ID do Evento Calendário</label>
+              <input type="text" name='id_evento_calendario' class="form-control myInput" readonly>
+            </div>
+          </div>
+          
+          <div class='row mt-3 border-top'>
+            <div class='col-4 mt-2'>
+                <button class="btn btn-outline-secondary w-100" type="button" id="button-addon1" onclick='abre_dialog_escolhe_prestador()'>
+                  <i class="bi bi-person-gear"></i>&nbsp;Escolher Prestador
+                  </button>
+              </div>
+          </div>          
+          <div class='row'>
+            <div class='col'>
+              <table class='table'>
+                <thead>
+                  <tr>
+                    <th class='col-1'></th>
+                    <th class='col-1'>ID</th>
+                    <th class='col-10'>Nome do Prestador</th>
+                  </tr>
+                </thead>
+                <tbody id='tabela_prestadores_selecionados'>
+                  <tr class='sinaliza_tabela_em_branco'>
+                    <td colspan="3">Nenhum Prestado Selecionado</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class='row mt-3 border-top'>
+            <div class='col-4 mt-2'>
+                <button class="btn btn-outline-secondary w-100" type="button" id="button-addon1" onclick='abre_dialog_escolhe_servico()'>
+                  <i class="bi bi-hammer"></i>&nbsp;Escolher Serviço
+                </button>
+              </div>
+          </div>
+          
+          <div class='row'>
+            <div class='col'>
+              <table class='table'>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Nome do Serviço</th>
+                    <th>Valor do Serviço</th>
+                  </tr>
+                </thead>
+                <tbody id='tabela_servicos_selecionados'>
+                  <tr class='sinaliza_tabela_em_branco'>
+                    <td colspan="4">Nenhum serviço selecionado</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+
+          <div class='row mt-3'>
+            <div class='col-2'>
+              <label>Valor Total</label>
+              <input type='text' class='form-control' id='valor_total_dos_servicos' readonly/>
+            </div>
+          </div>
+          <div class='row mt-3'>
+            <div class='col-2'>
+              <a href='https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/servicos_prestados/table'>
+                <button type="button" class="btn btn-danger w-100">Cancelar</button>
+              </a>
+            </div>
+            <div class='col-8'></div>
+            <div class='col-2'>
+              <button type="button" class="btn btn-primary w-100" onclick="salvar_servico_prestado()">Salvar</button>
+            </div>
+          </div>
+          <div class='row mt-3'>
+            <div class='col'>
+              <div class="alert alert-success" role="alert" id='meu_alert' style='display: none;'>
+                Registro salvo com sucesso!
+              </div>
+            </div>
+          </div>
+          <script>
+            function ao_alterar_prestador(x){
+              document.getElementById("id_do_prestador").value = x.value
+            }
+
+            function auxiliar_ready_2(
+              id_do_servico,
+              nome_do_servico,
+              valor_do_servico
+            ){
+              var tabela_servicos_selecionados = document.getElementById("tabela_servicos_selecionados")
+              var tr = document.createElement("tr")
+
+              var td = document.createElement("td")
+              td.innerHTML = '<i class="bi bi-trash"></i>'
+              td.style.cursor = 'pointer'
+
+              td.onclick = (e_2) => {
+                e_2.currentTarget.parentNode.remove()
+                if(tabela_servicos_selecionados.getElementsByTagName("tr").length == 1){
+                tabela_servicos_selecionados.getElementsByTagName("tr")[0].style.display = 'table-row'
+                }
+              }
+              tr.appendChild(td)
+
+              var td = document.createElement("td")
+              td.innerHTML = id_do_servico
+              tr.appendChild(td)
+
+              var td = document.createElement("td")
+              td.innerHTML = nome_do_servico
+              tr.appendChild(td)
+
+              var td = document.createElement("td")
+              var input = document.createElement("input")
+              input.type = 'number'
+              input.className = 'form-control'
+              input.value = valor_do_servico
+              td.appendChild(input)
+              tr.appendChild(td)
+
+              tabela_servicos_selecionados.appendChild(tr)
+
+              tabela_servicos_selecionados.getElementsByTagName("tr")[0].style.display = 'none'
+            
+            }
+
+            function auxiliar_ready(
+              id_prestador,
+              nome_prestador
+            ){
+              var tabela_prestadores_selecionados = document.getElementById("tabela_prestadores_selecionados")
+              var tr = document.createElement("tr")
+
+              var td = document.createElement("td")
+              td.innerHTML = '<i class="bi bi-trash"></i>'
+              td.style.cursor = 'pointer'
+
+              td.onclick = (e_2) => {
+                e_2.currentTarget.parentNode.remove()
+                if(tabela_prestadores_selecionados.getElementsByTagName("tr").length == 1){
+                tabela_prestadores_selecionados.getElementsByTagName("tr")[0].style.display = 'table-row'
+                }
+              }
+              tr.appendChild(td)
+
+              var td = document.createElement("td")
+              td.innerHTML = id_prestador
+              tr.appendChild(td)
+
+              var td = document.createElement("td")
+              td.innerHTML = nome_prestador
+              tr.appendChild(td)
+
+              tabela_prestadores_selecionados.appendChild(tr)
+
+              tabela_prestadores_selecionados.getElementsByTagName("tr")[0].style.display = 'none'
+            }
+
+
+
+            $(document).ready(function() {
+              prepara_form()
+
+              if(<?= id; ?> != 0){
+                google.script.run.withSuccessHandler(function (retorno){
+                  var dados = JSON.parse(retorno)
+
+                  var prestadores = dados[1]
+                  var servicos = dados[2]
+                  var data_prestacao = dados[3]
+
+                  document.getElementsByName("id")[0].value = dados[0]
+                  document.getElementsByName("data_prestacao")[0].value = dados[3].slice(0, 10)
+                  document.getElementsByName("id_evento_calendario")[0].value = dados[4]
+
+                  
+
+                  var prestadores = prestadores.split(",")
+                  prestadores.forEach((item)=>{
+                    var parte_1 = item.split(";")[0].slice(1, item.split(";")[0].length)
+                    var parte_2 = item.split(";")[1].slice(0, item.split(";")[1].length-1)
+                    auxiliar_ready(
+                      parte_1,
+                      parte_2
+                    )
+                  })
+
+                  var servicos = servicos.split(",")
+                  servicos.forEach((item)=>{
+                    var parte_1 = item.split(";")[0].slice(1, item.split(";")[0].length)
+                    var parte_2 = item.split(";")[1]
+                    var parte_3 = item.split(";")[2].slice(0, item.split(";")[2].length-1)
+
+                    auxiliar_ready_2(
+                      parte_1,
+                      parte_2,
+                      parte_3
+                    )
+                  })
+                  
+                
+                }).backend('ler_prestacao_de_servico_especifica', <?= id; ?>)
+
+              }
+            });
+
+            function prepara_form(){
+              google.script.run.withSuccessHandler(function (retorno){
+                var dados = JSON.parse(retorno)
+                
+                var prestadores = dados[0].slice(1, dados[0].length)
+                
+                var servicos = dados[1].slice(1, dados[1].length)
+
+                var prestador = document.getElementsByName('prestador')[0]
+
+                // PARTE GERADOR DA TABLE DO MODAL DO PRESTADOR
+                var dialog_tbody_escolhe_prestador = document.getElementById("dialog_tbody_escolhe_prestador")
+                var tabela_prestadores_selecionados = document.getElementById("tabela_prestadores_selecionados")
+
+                prestadores.forEach((item) => {
+
+                  var tr = document.createElement('tr')
+                  tr.style.cursor = 'pointer'
+
+                  tr.onclick = (e) => {
+                    var tr = document.createElement("tr")
+
+                    var td = document.createElement("td")
+                    td.innerHTML = '<i class="bi bi-trash"></i>'
+                    td.style.cursor = 'pointer'
+                    
+                    td.onclick = (e_2) => {
+                      e_2.currentTarget.parentNode.remove()
+                      if(tabela_prestadores_selecionados.getElementsByTagName("tr").length == 1){
+                        tabela_prestadores_selecionados.getElementsByTagName("tr")[0].style.display = 'table-row'
+                      }
+                    }
+                    tr.appendChild(td)
+
+                    var td = document.createElement("td")
+                    td.innerHTML = item[0]
+                    tr.appendChild(td)
+
+                    var td = document.createElement("td")
+                    td.innerHTML = item[1]
+                    tr.appendChild(td)
+
+                    tabela_prestadores_selecionados.appendChild(tr)
+
+                    tabela_prestadores_selecionados.getElementsByTagName("tr")[0].style.display = 'none'
+
+                    $('#dialog_escolhe_prestador').modal('hide')
+                  }
+
+                  var td = document.createElement('td')
+                  td.innerHTML = item[0]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  td.innerHTML = item[1]
+                  tr.appendChild(td)
+
+                  dialog_tbody_escolhe_prestador.appendChild(tr)
+                })
+
+                                
+                // PARTE GERADOR DA TABLE DO MODAL DOS SERVIÇOS
+                var dialog_tbody_escolhe_servico = document.getElementById("dialog_tbody_escolhe_servico")
+                var tabela_servicos_selecionados = document.getElementById("tabela_servicos_selecionados")
+
+                servicos.forEach((item) => {
+                  var tr = document.createElement('tr')
+                  tr.style.cursor = 'pointer'
+
+                  tr.onclick = (e) => {
+                    var tr = document.createElement("tr")
+
+                    var td = document.createElement("td")
+                    td.innerHTML = '<i class="bi bi-trash"></i>'
+                    td.style.cursor = 'pointer'
+                    
+                    td.onclick = (e_2) => {
+                      e_2.currentTarget.parentNode.remove()
+                      if(tabela_servicos_selecionados.getElementsByTagName("tr").length == 1){
+                        tabela_servicos_selecionados.getElementsByTagName("tr")[0].style.display = 'table-row'
+                      }
+                    }
+                    tr.appendChild(td)
+
+                    var td = document.createElement("td")
+                    td.innerHTML = item[0]
+                    tr.appendChild(td)
+
+                    var td = document.createElement("td")
+                    td.innerHTML = item[1]
+                    tr.appendChild(td)
+
+                    var td = document.createElement("td")
+                    var input = document.createElement("input")
+                    input.type = 'number'
+                    input.className = 'form-control'
+                    input.value = item[2]
+                    td.appendChild(input)
+                    tr.appendChild(td)
+
+                    tabela_servicos_selecionados.appendChild(tr)
+
+                    tabela_servicos_selecionados.getElementsByTagName("tr")[0].style.display = 'none'
+                    
+                    $('#dialog_escolhe_servico').modal('hide')
+                    
+                  }
+
+                  var td = document.createElement('td')
+                  td.innerHTML = item[0]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  td.innerHTML = item[1]
+                  tr.appendChild(td)
+
+                  dialog_tbody_escolhe_servico.appendChild(tr)
+                })
+
+                
+                
+              }).backend('prepara_form_servicos_prestados',)
+            }
+
+            function salvar_servico_prestado(){
+              var id = document.getElementsByName("id")[0].value
+              var data_prestacao = document.getElementsByName("data_prestacao")[0].value
+              var valor_total_dos_servicos = document.getElementById("valor_total_dos_servicos").value
+              var id_evento_calendario = document.getElementsByName("id_evento_calendario")[0].value
+              
+              
+              var arr_prestadores = []
+              var tabela_prestadores_selecionados = document.getElementById("tabela_prestadores_selecionados")
+              var todas_as_trs = tabela_prestadores_selecionados.querySelectorAll("tr")
+
+              todas_as_trs.forEach((item, index) =>{
+                if(index > 0){
+                  var obj = {
+                    id_do_prestador: item.getElementsByTagName("td")[1].innerHTML,
+                    nome_do_prestador: item.getElementsByTagName("td")[2].innerHTML,
+                  }
+                  arr_prestadores.push(obj)
+                }
+              })
+
+              var arr_servicos = []
+              var tabela_servicos_selecionados = document.getElementById("tabela_servicos_selecionados")
+              var todas_as_trs = tabela_servicos_selecionados.querySelectorAll("tr")
+
+              todas_as_trs.forEach((item, index) =>{
+                if(index > 0){
+                  var obj = {
+                    id_do_servico: item.getElementsByTagName("td")[1].innerHTML,
+                    nome_do_servico: item.getElementsByTagName("td")[2].innerHTML,
+                    valor_do_servico: item.getElementsByTagName("td")[3].getElementsByTagName('input')[0].value,
+                  }
+                  arr_servicos.push(obj)
+                }
+              })
+
+              var obj_para_lancar = {
+                id: id,
+                servico: arr_servicos,
+                prestador: arr_prestadores,
+                data_prestacao:data_prestacao,
+                valor_total_dos_servicos:valor_total_dos_servicos,
+                id_evento_calendario:id_evento_calendario
+              }
+
+              
+              google.script.run.withSuccessHandler(function (retorno){
+
+              }).backend('salvar_servico_prestado', obj_para_lancar)
+
+
+
+              
+
+            }
+          </script>  
+        </div>
+      </div>
+    </div>
+    <script class='fake_use_effect'>
+      
+      setInterval(function () {
+
+        var tabela_servicos_selecionados = document.getElementById("tabela_servicos_selecionados")
+        var todas_as_tr = tabela_servicos_selecionados.querySelectorAll("tr")
+
+        var valor_total = 0
+        
+        todas_as_tr.forEach((item, index) => {
+          if(index > 0){
+            var valor_para_somar = parseFloat(item.getElementsByTagName("td")[3].getElementsByTagName("input")[0].value)
+            valor_total += valor_para_somar
+          }
+        })
+      
+        document.getElementById("valor_total_dos_servicos").value = valor_total
+        
+
+      }, 1000);
+
+    </script>  
+    <script>
+      function abre_dialog_escolhe_prestador(){
+        $('#dialog_escolhe_prestador').modal('show')
+      }
+
+      function abre_dialog_escolhe_servico(){
+        $('#dialog_escolhe_servico').modal('show')
+      }
+      function pesquisar(x){
+        var dialog_tbody_escolhe_prestador = document.getElementById("dialog_tbody_escolhe_prestador")
+
+        var todas_as_linhas = dialog_tbody_escolhe_prestador.querySelectorAll('tr')
+        
+        var o_que_pesquisar = x.value.toLowerCase()
+
+        todas_as_linhas.forEach((item) => {
+          var celula_0 = item.getElementsByTagName("td")[0].innerHTML.toLowerCase()
+          var celula_1 = item.getElementsByTagName("td")[1].innerHTML.toLowerCase()
+          if (
+            celula_0.includes(o_que_pesquisar) || 
+            celula_1.includes(o_que_pesquisar)
+          ) {
+            item.style.display = 'table-row'
+          } else {
+            item.style.display = 'none'
+            
+          }
+
+        })
+
+      }
+
+    </script>
+    <div class="modal" id='dialog_escolhe_prestador' tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Escolher Prestador</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class='row'>
+              <div class='col'>
+                <input type='text' class='form-control' placeholder="Digite aqui sua pesquisa" oninput="pesquisar(this)" />
+              </div>
+            </div>
+            <div class='row mt-1'>
+              <div class='col'>
+                <table class="table table-hover">
+                  <tbody id='dialog_tbody_escolhe_prestador'></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id='dialog_escolhe_servico' tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Escolher Serviço</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class='row'>
+              <div class='col'>
+                <input type='text' class='form-control' placeholder="Digite aqui sua pesquisa" oninput="pesquisar(this)" />
+              </div>
+            </div>
+            <div class='row mt-1'>
+              <div class='col'>
+                <table class="table table-hover">
+                  <tbody id='dialog_tbody_escolhe_servico'></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+
+
+
+

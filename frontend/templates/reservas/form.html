@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('multiuso/header'); ?>
+  </head>
+  <body>
+    <div class='container-fluid'>
+      <div class='row' style='height: 100vh;'>
+        <div class='col-2'>
+          <?!= include('multiuso/menu_lateral'); ?>
+        </div>
+        <div class='col-10' id='form_servico'>
+          <div class='row mt-3'>
+            <h5>Reserva</h5>
+          </div>
+          <div class='row'>
+            <div class='col-2'>
+              <label class="form-label">ID</label>
+              <input type="number" name='id' class="form-control myInput" readonly>
+            </div>
+            <div class='col-10'>
+              <label class="form-label">ID Calendário</label>
+              <input type="number" name='' class="form-control myInput" readonly>
+            </div>
+          </div>
+        <div class='row'>
+            <div class='col'>
+              <label class="form-label">Título da Reserva</label>
+              <input type="text" name='titulo_da_reserva' class="form-control myInput">
+            </div>
+          </div>
+
+          <div class='row mt-1'>
+            <div class='col-4'>
+              <label class="form-label">Data do Check In</label>
+              <input type="datetime-local" name='data_do_check_in' class="form-control myInput">
+            </div>
+            <div class='col-4'>
+              <label class="form-label">Data do Check Out</label>
+              <input type="datetime-local" name='data_do_check_out' class="form-control myInput">
+            </div>
+            <div class='col-4'>
+              <label class="form-label">Status da Reserva</label>
+              <input type="text" name='status_da_reserva' class="form-control myInput">
+            </div>
+          </div>
+
+          <style>
+              .tooltip-inner {
+                text-align: left;
+              }
+              div.tooltip-inner {
+                max-width: 500px;
+                min-width: 500px;
+                width: 500px;
+              }
+            </style>
+          <div class='row mt-3 border-top'>
+            <div class='col-4 mt-2'>
+                <button class="btn btn-outline-secondary w-100" type="button" id="button-addon1" onclick='abre_dialog_escolhe_cliente()'>
+                  <script>
+                    function desmarca_a_selecao_da_linha(tbody){
+                      var toda_as_tr = tbody.querySelectorAll("tr")
+                      toda_as_tr.forEach((item) => {
+                        item.classList.remove('table-primary')
+                      })
+                    }
+
+                    function ao_clicar_no_cliente_escolhido(linha){
+
+                      const node = linha;
+                      const clone = node.cloneNode(true);
+                      clone.className = ''
+
+                      var tds_para_esconder = [2,3,4,5,6,7,8]
+                      var todas_tds = clone.querySelectorAll("td")
+
+                      // CÓDIGO ANTES - LEGADO
+                      // clone.onclick = (e) => {
+                      //   desmarca_a_selecao_da_linha(
+                      //     document.getElementById("tabela_clientes_selecionados")
+                      //   )
+                      //   var linha_clicada = e.currentTarget
+                      //   linha_clicada.classList.add("table-primary")
+                      // }
+
+                      tds_para_esconder.forEach((item_2) =>{
+
+                        todas_tds[item_2].style.display = 'none'
+                      })
+
+                      // id	nome_do_cliente	telefone_do_cliente	cpf_do_cliente	cep_do_cliente	instagram	email_do_cliente	data_de_nascimento	obs
+                      
+                      var myString = "<span style='text-align: left;'>"
+                      myString += `<span style='text-align: left;'> ID: ` + clone.getElementsByTagName("td")[0].innerHTML + '</span><br>'
+                      myString += `<span style='text-align: left;'> Nome do Cliente: ` + clone.getElementsByTagName("td")[1].innerHTML + '</span><br>'   
+                      myString += 'Telefone do Cliente: ' + clone.getElementsByTagName("td")[2].innerHTML + '<br>'
+                      myString += 'CPF do Cliente: ' + clone.getElementsByTagName("td")[3].innerHTML + '<br>'
+                      myString += 'CEP do Cliente: ' + clone.getElementsByTagName("td")[4].innerHTML + '<br>'
+                      myString += 'Instagram: ' + clone.getElementsByTagName("td")[5].innerHTML + '<br>'
+                      myString += 'Email do Cliente: ' + clone.getElementsByTagName("td")[6].innerHTML + '<br>'
+                      myString += 'Data de Nascimento: ' + clone.getElementsByTagName("td")[7].innerHTML + '<br>'
+                      myString += 'Observação: ' + clone.getElementsByTagName("td")[8].innerHTML + '<br>'
+
+                      myString += "</span>"
+
+                      $(clone.getElementsByTagName("td")[1]).tooltip({title: myString, html: true, placement: "bottom"}); 
+
+                      var td = document.createElement("td")
+                      td.innerHTML = '<i class="bi bi-trash"></i>'
+                      td.style.cursor = 'pointer'
+
+                      td.onclick = (e_2) => {
+                      e_2.currentTarget.parentNode.remove()
+                        if(tabela_produtos_selecionados.getElementsByTagName("tr").length == 1){
+                          tabela_produtos_selecionados.getElementsByTagName("tr")[0].style.display = 'table-row'
+                        }
+                      }
+
+                      clone.insertBefore(td, clone.firstChild);
+                      
+                      document.getElementById("tabela_clientes_selecionados").appendChild(clone);
+                      document.getElementById("tabela_clientes_selecionados").getElementsByTagName("tr")[0].style.display = 'none'
+                    }
+
+                    function abre_dialog_escolhe_hospedagem(){
+                      $('#dialog_escolhe_hospedagem').modal('show')
+                    }
+
+                    function abre_dialog_escolhe_produto(){
+                      $('#dialog_escolhe_produto').modal('show')
+                    }
+                    function abre_dialog_escolhe_pagamento(){
+                      $('#dialog_escolhe_pagamento').modal('show')
+                    }
+
+
+                    function escolher_cliente_no_dialog(){
+                      var tbody = document.getElementById('dialog_tbody_escolhe_cliente')
+                      var table_primary = tbody.querySelectorAll(".table-primary")[0]
+                      ao_clicar_no_cliente_escolhido(table_primary)
+                      // table_primary.className = ''
+                      $('#dialog_escolhe_cliente').modal('hide')
+                    }
+
+                    function abre_dialog_escolhe_cliente(){
+                      var dialog_tbody_escolhe_cliente = document.getElementById("dialog_tbody_escolhe_cliente")
+                      var todas_tr = dialog_tbody_escolhe_cliente.querySelectorAll('tr')
+
+                      todas_tr.forEach((item) =>{
+                        item.remove()
+                      })
+
+
+                      google.script.run.withSuccessHandler(function (retorno) {
+                        var clientes = JSON.parse(retorno)
+                        clientes = clientes.slice(1, clientes.length)
+
+                        clientes.forEach((item) => {
+                          var tr = document.createElement('tr')
+
+                          tr.onclick = (e) =>{
+
+                            desmarca_a_selecao_da_linha(document.getElementById("dialog_tbody_escolhe_cliente"))
+
+                            var linha_clicada = e.currentTarget
+                            linha_clicada.classList.add("table-primary")
+
+                            // MODELO ANTIGO - LEGADO
+                            // ao_clicar_no_cliente_escolhido(e.currentTarget)
+                            // $('#dialog_escolhe_cliente').modal('hide')
+                          }
+
+                          var colunas = [0,1,2,3,4,5,6,7,8]
+
+                          colunas.forEach((coluna) => {
+                            if(coluna == 7){
+                              var td = document.createElement('td')
+                              var data_br = desmonta_data(item[7].slice(0,10))
+                              if(data_br.dia){
+                                td.innerHTML = data_br.dia + "/" + data_br.mes + "/" + data_br.ano
+                              }
+                              tr.appendChild(td)
+                            } else {
+                              var td = document.createElement('td')
+                              td.innerHTML = item[coluna]
+                              tr.appendChild(td)   
+                            }
+                          })
+                          
+                          
+                          dialog_tbody_escolhe_cliente.appendChild(tr)
+
+                        })
+
+                      }).backend('ler_todas_as_clientes',)
+                      $('#dialog_escolhe_cliente').modal('show')
+                    }
+                  </script>  
+                  <i class="bi bi-person-gear"></i>&nbsp;Escolher Cliente
+                  </button>
+              </div>
+              <!-- <div class='col-2 mt-2'>
+                <a href="https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/clientes/form&id=0" target="_blank">
+                  <button type="button" class="btn btn-light w-100" onclick=""><i class="bi bi-plus-circle"></i>&nbsp;Novo</button>
+                </a>
+              </div>
+              <div class='col-2 mt-2'>
+                <button type="button" class="btn btn-light w-100" onclick=""><i class="bi bi-pencil-square"></i>&nbsp;Alterar</button>
+              </div> -->
+          </div>    
+    
+          <div class='row'>
+            <div class='col'>
+              <table class='table'>
+                <thead>
+                  <tr>
+                    <th class='col-1'></th>
+                    <th class='col-1'>ID</th>
+                    <th class='col-10'>Nome do Cliente</th>
+                  </tr>
+                </thead>
+                <tbody id='tabela_clientes_selecionados'>
+                  <tr class='sinaliza_tabela_em_branco'>
+                    <td colspan="3">Nenhum Cliente Selecionado</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class='row mt-3 border-top'>
+            <div class='col-4 mt-2'>
+                <button class="btn btn-outline-secondary w-100" type="button" id="button-addon1" onclick='abre_dialog_escolhe_hospedagem()'>
+                  <i class="bi bi-person-gear"></i>&nbsp;Escolher Hospedagem
+                </button>
+              </div>
+          </div>          
+          <div class='row'>
+            <div class='col'>
+              <table class='table'>
+                <thead>
+                  <tr>
+                    <th class='col-1'></th>
+                    <th class='col-1'>ID</th>
+                    <th class='col-6'>Nome da Hospedagem</th>
+                    <th class='col-2'>Valor</th>
+                    <th class='col-1'>Início</th>
+                    <th class='col-1'>Fim</th>
+                  </tr>
+                </thead>
+                <tbody id='tabela_hospedagens_selecionadas'>
+                  <tr class='sinaliza_tabela_em_branco'>
+                    <td colspan="6">Nenhuma Hospedagem Selecionada</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class='row'>
+              <div class='col-10'></div>
+              <div class='col-2' style='text-align: left;'>
+                <label style='text-align: left;'>Valor Hospedagens</label>
+                <input type='text' id='valor_total_em_hospedagens' class="form-control" style='text-align: right;' readonly />
+              </div>
+          </div>
+
+          <div class='row mt-3 border-top'>
+            <div class='col-4 mt-2'>
+                <button class="btn btn-outline-secondary w-100" type="button" id="button-addon1" onclick='abre_dialog_escolhe_produto()'>
+                  <i class="bi bi-person-gear"></i>&nbsp;Escolher Produto
+                </button>
+              </div>
+          </div>          
+          <div class='row'>
+            <div class='col'>
+              <table class='table'>
+                <thead>
+                  <tr>
+                    <th class='col-1'></th>
+                    <th class='col-1'>ID</th>
+                    <th class='col-7'>Nome do Produto</th>
+                    <th class='col-2'>Valor</th>
+                    <th class='col-1'>Data</th>
+                    
+                  </tr>                
+                </thead>
+                <tbody id='tabela_produtos_selecionados'>
+                  <tr class='sinaliza_tabela_em_branco'>
+                    <td colspan="5">Nenhuma Produto Selecionado</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col-10'></div>
+            <div class='col-2' style='text-align: left;'>
+              <label style='text-align: left;'>Valor Produtos</label>
+              <input type='text' id='valor_total_em_produtos' class="form-control" style='text-align: right;' readonly />
+            </div>
+          </div>
+
+          <div class='row mt-3 border-top'>
+            <div class='col'>
+              <label class="form-label">Observação</label>
+              <input type="text" name='obs_da_reserva' class="form-control myInput">
+            </div>
+          </div>
+
+
+          <div class='row mt-3 border-top'>
+            <div class='col-10'></div>
+            <div class='col-2' style='text-align: left;'>
+              <label style='text-align: left;'>Valor Total da Reserva</label>
+              <input type='text' id='valor_total_da_reserva' class="form-control" style='text-align: right;' readonly />
+            </div>
+          </div>
+
+
+          <div class='row mt-3 border-top'>
+            <div class='col-4 mt-2'>
+                <button class="btn btn-outline-secondary w-100" type="button" id="button-addon1" onclick='abre_dialog_escolhe_pagamento()'>
+                  <i class="bi bi-person-gear"></i>&nbsp;Realizar Pagamento
+                  </button>
+              </div>
+          </div>     
+          
+               
+          <div class='row'>
+            <div class='col'>
+              <table class='table'>
+                <thead>
+                  <tr>
+                    <th class='col-1'></th>
+                    <th class='col-1'>ID</th>
+                    <th class='col-3'>Pagamento</th>
+                    <th class='col-2'>Valor</th>
+                    <th class='col-1'>Data</th>
+                    <th class='col-4'>Obs.</th>
+                  </tr>
+                </thead>
+                <tbody id='tabela_pagamentos_selecionados'>
+                  <tr class='sinaliza_tabela_em_branco'>
+                    <td colspan="6">Nenhum Pagamento</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-10'></div>
+            <div class='col-2' style='text-align: left;'>
+              <label style='text-align: left;'>Valor Pagamentos</label>
+              <input type='text' id='valor_total_em_pagamentos' class="form-control" style='text-align: right;' readonly />
+            </div>
+          </div>
+
+
+
+          <div class='row mt-3 border-top'>
+            <div class='col-10'></div>
+            <div class='col-2' style='text-align: left;'>
+              <label style='text-align: left;'>Saldo</label>
+              <input type='text' id='valor_saldo' class="form-control" style='text-align: right;' readonly />
+            </div>
+          </div>
+          <div class='row mt-3'>
+            <div class='col-2'>
+              <a href='https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/reservas/table'>
+                <button type="button" class="btn btn-danger w-100">Cancelar</button>
+              </a>
+            </div>
+            <div class='col-8'></div>
+            <div class='col-2'>
+              <button type="button" class="btn btn-primary w-100" onclick="salvar_reserva()">Salvar</button>
+            </div>
+          </div>
+          <div class='row mt-3'>
+            <div class='col'>
+              <div class="alert alert-success" role="alert" id='meu_alert' style='display: none;'>
+                Registro salvo com sucesso!
+              </div>
+            </div>
+          </div>
+          <script>
+            function valor_total(){
+              var valor_total_das_hospedagens = 0
+              var valor_total_dos_produtos = 0
+              var valor_total_dos_pagamentos = 0
+
+
+              var tabela_hospedagens_selecionadas = document.getElementById("tabela_hospedagens_selecionadas")
+              var linhas_tabela_hospedagens_selecionadas = tabela_hospedagens_selecionadas.querySelectorAll("tr")              
+
+              linhas_tabela_hospedagens_selecionadas.forEach((item, index) => {
+                if(index > 0){
+                  var valor = item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value
+                  valor_total_das_hospedagens += parseFloat(valor)
+                }
+              })
+              
+              var tabela_produtos_selecionados = document.getElementById("tabela_produtos_selecionados")
+              var linhas_tabela_produtos_selecionadas = tabela_produtos_selecionados.querySelectorAll("tr")              
+
+              linhas_tabela_produtos_selecionadas.forEach((item, index) => {
+                if(index > 0){
+                  var valor = item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value
+                  valor_total_dos_produtos += parseFloat(valor)
+                }
+              })
+
+              var tabela_pagamentos_selecionados = document.getElementById("tabela_pagamentos_selecionados")
+              var linhas_tabela_pagamentos_selecionadas = tabela_pagamentos_selecionados.querySelectorAll("tr")              
+
+              linhas_tabela_pagamentos_selecionadas.forEach((item, index) => {
+                if(index > 0){
+                  var valor = item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value
+                  valor_total_dos_pagamentos += parseFloat(valor)
+                }
+              })
+
+              var valor_total_da_reserva = valor_total_das_hospedagens + valor_total_dos_produtos
+
+              var valor_saldo = valor_total_da_reserva - valor_total_dos_pagamentos
+
+              document.getElementById("valor_total_em_hospedagens").value = valor_total_das_hospedagens.toLocaleString('pt-BR')
+              document.getElementById("valor_total_em_produtos").value = valor_total_dos_produtos.toLocaleString('pt-BR')
+              document.getElementById("valor_total_em_pagamentos").value = valor_total_dos_pagamentos.toLocaleString('pt-BR')
+              document.getElementById("valor_total_da_reserva").value = valor_total_da_reserva.toLocaleString('pt-BR')
+              
+              document.getElementById("valor_saldo").value = valor_saldo.toLocaleString('pt-BR')
+
+              if (valor_saldo > 0){
+                document.getElementById("valor_saldo").className = 'form-control bg-warning'
+              } else {
+                document.getElementById("valor_saldo").className = 'form-control bg-success'
+              }
+              
+
+              
+
+            }
+            
+            setInterval(valor_total, 500)
+
+
+
+            function salvar_reserva(){
+
+              var id = document.getElementsByName('id')[0].value
+              var titulo_da_reserva = document.getElementsByName('titulo_da_reserva')[0].value
+              var data_do_check_in = document.getElementsByName('data_do_check_in')[0].value
+              var data_do_check_out = document.getElementsByName('data_do_check_out')[0].value
+              var status_da_reserva = document.getElementsByName('status_da_reserva')[0].value
+              var obs_da_reserva = document.getElementsByName('obs_da_reserva')[0].value
+
+              var tabela_clientes_selecionados = document.getElementById('tabela_clientes_selecionados')
+              var todas_as_linhas = tabela_clientes_selecionados.querySelectorAll('tr')
+              var arr_cliente = []
+              todas_as_linhas.forEach((item, index) => {
+                if(index > 0){
+                  var linha = []
+                  for(var i = 1; i < 10;i++){
+                    linha.push(item.getElementsByTagName('td')[i].innerHTML)
+                  }
+                  arr_cliente.push(linha)
+                }
+              })
+
+              var tabela_hospedagens_selecionadas = document.getElementById('tabela_hospedagens_selecionadas')
+              var todas_as_linhas = tabela_hospedagens_selecionadas.querySelectorAll('tr')
+              var arr_hospedagens = []
+              todas_as_linhas.forEach((item, index) => {
+                if(index > 0){
+                  var linha = []
+                  linha.push(item.getElementsByTagName('td')[1].innerHTML)
+                  linha.push(item.getElementsByTagName('td')[2].innerHTML)
+                  linha.push(item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value)
+                  linha.push(item.getElementsByTagName('td')[4].getElementsByTagName('input')[0].value)
+                  linha.push(item.getElementsByTagName('td')[5].getElementsByTagName('input')[0].value)
+                  arr_hospedagens.push(linha)
+                }
+              })
+
+              var tabela_produtos_selecionados = document.getElementById('tabela_produtos_selecionados')
+              var todas_as_linhas = tabela_produtos_selecionados.querySelectorAll('tr')
+              var arr_produtos = []
+              todas_as_linhas.forEach((item, index) => {
+                if(index > 0){
+                  var linha = []
+                  linha.push(item.getElementsByTagName('td')[1].innerHTML)
+                  linha.push(item.getElementsByTagName('td')[2].innerHTML)
+                  linha.push(item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value)
+                  linha.push(item.getElementsByTagName('td')[4].getElementsByTagName('input')[0].value)
+                  arr_produtos.push(linha)
+                }
+              })
+
+              var tabela_pagamentos_selecionados = document.getElementById('tabela_pagamentos_selecionados')
+              var todas_as_linhas = tabela_pagamentos_selecionados.querySelectorAll('tr')
+              var arr_pagamentos = []
+              todas_as_linhas.forEach((item, index) => {
+                if(index > 0){
+                  var linha = []
+                  linha.push(item.getElementsByTagName('td')[1].innerHTML)
+                  linha.push(item.getElementsByTagName('td')[2].innerHTML)
+                  linha.push(item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value)
+                  linha.push(item.getElementsByTagName('td')[4].getElementsByTagName('input')[0].value)
+                  linha.push(item.getElementsByTagName('td')[5].getElementsByTagName('input')[0].value)
+                  arr_pagamentos.push(linha)
+                }
+              })
+
+              var obj_para_lancar = {
+                id: id,
+                titulo_da_reserva: titulo_da_reserva,
+                data_do_check_in: data_do_check_in,
+                data_do_check_out:data_do_check_out,
+                status_da_reserva:status_da_reserva,
+                obs_da_reserva: obs_da_reserva,
+                arr_cliente: arr_cliente,
+                arr_hospedagens:arr_hospedagens,
+                arr_pagamentos:arr_pagamentos,
+                arr_produtos:arr_produtos
+              }
+
+              console.log(obj_para_lancar)
+              obj_para_lancar = JSON.stringify(obj_para_lancar)
+              console.log(obj_para_lancar)
+
+
+              google.script.run.withSuccessHandler(function (retorno){
+                var dados = JSON.parse(retorno)
+                var a = document.createElement('a')
+                a.href = 'https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/reservas/form&id=' + dados[1]
+                document.getElementsByTagName('body')[0].appendChild(a)
+                a.click()
+
+
+
+              }).backend('salvar_reserva', obj_para_lancar)
+
+              // tabela_pagamentos_selecionados
+            }
+
+
+            $(document).ready(function() {
+              popula_tbody_hospedagens()
+              popula_tbody_produtos()
+              popula_tbody_pagamentos()
+
+              if(<?= id; ?> != 0){
+                google.script.run.withSuccessHandler(function (retorno){
+                  var dados = JSON.parse(retorno)
+                  
+                  var id_da_reserva = dados[0]
+                  var titulo_da_reserva = dados[1]
+                  
+                  var data_do_check_in = dados[2].slice(0, 16)
+                  var data_do_check_out =  dados[3].slice(0, 16)
+                  var status_da_reserva =  dados[4]
+                  var clientes = JSON.parse(dados[5])
+                  var hospedagens = JSON.parse(dados[6])
+                  var produtos = JSON.parse(dados[7])
+                  var observacao = dados[8]
+                  var pagamentos = JSON.parse(dados[9])
+                  var id_dos_eventos =  dados[10]
+
+                  console.log(clientes)
+
+                  document.getElementsByName("id")[0].value = id_da_reserva
+                  // document.getElementsByName("")[0].value = id_dos_eventos
+                  document.getElementsByName("titulo_da_reserva")[0].value = titulo_da_reserva
+                  document.getElementsByName("data_do_check_in")[0].value = data_do_check_in
+                  document.getElementsByName("data_do_check_out")[0].value = data_do_check_out
+                  document.getElementsByName("status_da_reserva")[0].value = status_da_reserva
+                  document.getElementsByName("obs_da_reserva")[0].value = observacao
+
+
+                  console.log(dados)
+                }).backend('ler_reserva_especifica', <?= id; ?>)
+
+              }   
+            });
+
+
+            function popula_tbody_pagamentos(){
+
+              google.script.run.withSuccessHandler(function (retorno) {
+                var dialog_tbody_escolhe_pagamento = document.getElementById("dialog_tbody_escolhe_pagamento")
+                
+                var dados = JSON.parse(retorno)
+                console.log(dados)
+                dados = dados.slice(1, dados.length)
+                
+                dados.forEach((item) => {
+                 
+                  var tr = document.createElement('tr')
+                  
+                  tr.onclick = (e) => {
+                    var linha = e.currentTarget
+
+                    var node = linha;
+                    var clone = node.cloneNode(true);
+
+                    clone.getElementsByTagName('td')[2].style.display = 'table-cell'
+                    clone.getElementsByTagName('td')[3].style.display = 'table-cell'
+                    clone.getElementsByTagName('td')[4].style.display = 'table-cell'
+
+                    var td = document.createElement("td")
+                    td.innerHTML = '<i class="bi bi-trash"></i>'
+                    td.style.cursor = 'pointer'
+
+                    td.onclick = (e_2) => {
+                      e_2.currentTarget.parentNode.remove()
+                      var tabela_pagamentos_selecionados = document.getElementById('tabela_pagamentos_selecionados')
+                      if(tabela_pagamentos_selecionados.getElementsByTagName("tr").length == 1){
+                          tabela_pagamentos_selecionados.getElementsByTagName("tr")[0].style.display = 'table-row'
+                        }
+                    }
+                    
+                    clone.insertBefore(td, clone.firstChild);
+                    
+                    
+                    var tabela_pagamentos_selecionados = document.getElementById('tabela_pagamentos_selecionados')
+                    document.getElementById("tabela_pagamentos_selecionados").getElementsByTagName("tr")[0].style.display = 'none'
+                    
+                    tabela_pagamentos_selecionados.appendChild(clone)
+                    $('#dialog_escolhe_pagamento').modal('hide')
+                    
+
+
+                  }
+                  
+                  var td = document.createElement('td')
+                  td.innerHTML = item[0]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  td.innerHTML = item[1]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  td.style.display = 'none'
+                  var input = document.createElement('input')
+                  input.type = 'number'
+                  input.min = 0
+                  input.value = 0
+                  input.className = 'form-control'
+                  td.appendChild(input)                  
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.type = 'datetime-local'
+                  input.className = 'form-control'
+                  td.appendChild(input)
+                  td.style.display = 'none'
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.type = 'text'
+                  input.className = 'form-control'
+                  td.appendChild(input)
+                  td.style.display = 'none'
+                  tr.appendChild(td)
+
+
+                  dialog_tbody_escolhe_pagamento.appendChild(tr)
+                  
+                })
+
+
+              }).backend('ler_todas_as_formaDePagamentos',)
+            
+
+            }
+
+            function popula_tbody_produtos(){
+
+              google.script.run.withSuccessHandler(function (retorno) {
+                var dialog_tbody_escolhe_produto = document.getElementById("dialog_tbody_escolhe_produto")
+                
+                var dados = JSON.parse(retorno)
+                dados = dados.slice(1, dados.length)
+                
+                dados.forEach((item) => {
+                 
+                  var tr = document.createElement('tr')
+                  
+                  tr.onclick = (e) => {
+                    var linha = e.currentTarget
+
+                    var node = linha;
+                    var clone = node.cloneNode(true);
+
+                    var td = document.createElement("td")
+                    td.innerHTML = '<i class="bi bi-trash"></i>'
+                    td.style.cursor = 'pointer'
+
+                    clone.getElementsByTagName("td")[3].style.display = 'table-cell'
+
+                    td.onclick = (e_2) => {
+                      e_2.currentTarget.parentNode.remove()
+                      var tabela_produtos_selecionados = document.getElementById('tabela_produtos_selecionados')
+                      if(tabela_produtos_selecionados.getElementsByTagName("tr").length == 1){
+                          tabela_produtos_selecionados.getElementsByTagName("tr")[0].style.display = 'table-row'
+                        }
+                    }
+                    
+                    clone.insertBefore(td, clone.firstChild);
+                    
+                    
+                    var tabela_produtos_selecionados = document.getElementById('tabela_produtos_selecionados')
+                    document.getElementById("tabela_produtos_selecionados").getElementsByTagName("tr")[0].style.display = 'none'
+                    
+                    tabela_produtos_selecionados.appendChild(clone)
+                    $('#dialog_escolhe_produto').modal('hide')
+                    
+
+
+                  }
+                  
+                  var td = document.createElement('td')
+                  td.innerHTML = item[0]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  td.innerHTML = item[1]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.type = 'number'
+                  input.className = 'form-control'
+                  input.value = item[2]
+                  td.appendChild(input)
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.type = 'datetime-local'
+                  input.className = 'form-control'
+                  td.appendChild(input)
+                  td.style.display = 'none'
+                  tr.appendChild(td)
+
+                  dialog_tbody_escolhe_produto.appendChild(tr)
+                  
+                })
+
+
+              }).backend('ler_todas_as_produtos',)
+            }
+
+            function popula_tbody_hospedagens(){
+              google.script.run.withSuccessHandler(function (retorno) {
+                var dialog_tbody_escolhe_hospedagem = document.getElementById("dialog_tbody_escolhe_hospedagem")
+                
+                var dados = JSON.parse(retorno)
+                dados = dados.slice(1, dados.length)
+                
+                dados.forEach((item) => {
+                 
+                  var tr = document.createElement('tr')
+                  
+                  tr.onclick = (e) => {
+                    var linha = e.currentTarget
+
+                    var node = linha;
+                    var clone = node.cloneNode(true);
+
+                    var td = document.createElement("td")
+                    td.innerHTML = '<i class="bi bi-trash"></i>'
+                    td.style.cursor = 'pointer'
+
+                    clone.getElementsByTagName("td")[3].style.display = 'table-cell'
+                    clone.getElementsByTagName("td")[4].style.display = 'table-cell'
+
+                    td.onclick = (e_2) => {
+                      e_2.currentTarget.parentNode.remove()
+                      var tabela_hospedagens_selecionadas = document.getElementById('tabela_hospedagens_selecionadas')
+                      if(tabela_hospedagens_selecionadas.getElementsByTagName("tr").length == 1){
+                          tabela_hospedagens_selecionadas.getElementsByTagName("tr")[0].style.display = 'table-row'
+                        }
+                    }
+                    
+                    clone.insertBefore(td, clone.firstChild);
+                    
+                    
+                    var tabela_hospedagens_selecionadas = document.getElementById('tabela_hospedagens_selecionadas')
+                    document.getElementById("tabela_hospedagens_selecionadas").getElementsByTagName("tr")[0].style.display = 'none'
+                    
+                    tabela_hospedagens_selecionadas.appendChild(clone)
+                    $('#dialog_escolhe_hospedagem').modal('hide')
+                    
+
+
+                  }
+                  
+                  var td = document.createElement('td')
+                  td.innerHTML = item[0]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  td.innerHTML = item[1]
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.type = 'number'
+                  input.className = 'form-control'
+                  input.value = item[2]
+                  td.appendChild(input)
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.type = 'datetime-local'
+                  input.className = 'form-control'                  
+                  td.style.display = 'none'
+                  td.appendChild(input)
+                  tr.appendChild(td)
+
+                  var td = document.createElement('td')
+                  var input = document.createElement('input')
+                  input.type = 'datetime-local'
+                  input.className = 'form-control'
+                  td.appendChild(input)
+                  td.style.display = 'none'
+                  tr.appendChild(td)
+
+                  dialog_tbody_escolhe_hospedagem.appendChild(tr)
+                  
+                })
+
+
+              }).backend('ler_todas_as_hospedagens',)
+            }
+
+            function salvar_servico(){
+              var form_servico = document.getElementById("form_servico")
+              var myInput = form_servico.querySelectorAll(".myInput")
+              
+              var obj_para_lancar = {}
+
+              myInput.forEach((item)=>{
+                  obj_para_lancar[item.name] = item.value
+              })
+
+              google.script.run.withSuccessHandler(function (retorno){
+
+
+                document.getElementById("meu_alert").style.display = 'flex'
+
+                setTimeout(function (){
+                  var a = document.createElement("a")
+                  a.href = 'https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/servicos/table'
+                  document.getElementById("meu_alert").appendChild(a)
+                  a.click()
+
+                }, 2000);
+
+
+
+              }).backend('salvar_servico', obj_para_lancar)
+            }
+          </script>  
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ESCOLHE CLIENTE -->
+    <div class="modal modal-xl" id='dialog_escolhe_cliente' tabindex="-1">
+      <div class="modal-dialog ">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Escolher Cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class='row'>
+
+              <div class="col-2">
+                <button type="button" class="btn btn-light w-100" onclick="escolher_cliente_no_dialog()"><i class="bi bi-hand-index"></i>&nbsp;Escolher</button>
+              </div>
+
+             <div class="col-2">
+                <a href="https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/clientes/form&amp;id=0" target="_blank">
+                  <button type="button" class="btn btn-light w-100" onclick=""><i class="bi bi-plus-circle"></i>&nbsp;Novo</button>
+                </a>
+              </div>
+              <div class="col-2">
+                <button type="button" class="btn btn-light w-100" onclick="altera_linha_clientes()"><i class="bi bi-pencil-square"></i>&nbsp;Alterar</button>
+              </div>
+            </div>
+            <div class='row mt-2'>
+              <div class='col'>
+                <input type='text' class='form-control' placeholder="Digite aqui sua pesquisa" oninput="pesquisar(this)" />
+              </div>
+            </div>
+            <div class='row mt-1'>
+              <div class='col'>
+                <table class="table table-hover">
+                  <tbody id='dialog_tbody_escolhe_cliente'></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function altera_linha_clientes(){
+
+        var tbody = document.getElementById('dialog_tbody_escolhe_cliente')
+        var table_primary = tbody.querySelectorAll(".table-primary")[0]
+        var id = table_primary.getElementsByTagName("td")[0].innerHTML
+
+        var a = document.createElement('a')
+        a.target = "_blank"
+        a.href = 'https://script.google.com/macros/s/AKfycbxQ9o-IByZXrAHyjGXf8kvbLCILC2Hpx48dmjGxsbI/dev?page=templates/clientes/form&id=' + id.toString()
+        
+        document.getElementsByTagName("body")[0].appendChild(a)
+        a.click()
+        a.remove()
+      }
+    </script>  
+
+    <!-- MODAL ESCOLHE HOSPEDAGEM -->
+    <div class="modal modal-xl" id='dialog_escolhe_hospedagem' tabindex="-1">
+      <div class="modal-dialog ">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Escolher Hospedagem</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class='row'>
+              <div class='col'>
+                <input type='text' class='form-control' placeholder="Digite aqui sua pesquisa" oninput="pesquisar(this)" />
+              </div>
+            </div>
+            <div class='row mt-1'>
+              <div class='col'>
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nome</th>
+                      <th>Valor</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id='dialog_tbody_escolhe_hospedagem'></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- MODAL ESCOLHE PRODUTO -->
+    <div class="modal modal-xl" id='dialog_escolhe_produto' tabindex="-1">
+      <div class="modal-dialog ">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Escolher Produto</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class='row'>
+              <div class='col'>
+                <input type='text' class='form-control' placeholder="Digite aqui sua pesquisa" oninput="pesquisar(this)" />
+              </div>
+            </div>
+            <div class='row mt-1'>
+              <div class='col'>
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nome</th>
+                      <th>Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody id='dialog_tbody_escolhe_produto'></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ESCOLHE PAGAMENTO -->
+    <div class="modal modal-xl" id='dialog_escolhe_pagamento' tabindex="-1">
+      <div class="modal-dialog ">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Realizar Pagamento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class='row'>
+              <div class='col'>
+                <input type='text' class='form-control' placeholder="Digite aqui sua pesquisa" oninput="pesquisar(this)" />
+              </div>
+            </div>
+            <div class='row mt-1'>
+              <div class='col'>
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nome</th>                      
+                    </tr>
+                  </thead>
+                  <tbody id='dialog_tbody_escolhe_pagamento'></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>
+
+
+
+
