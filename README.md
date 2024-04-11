@@ -1,6 +1,6 @@
 Projeto Free and Open Source (Grátis e de Código Aberto).
 
-Sistema feito em HTML/CSS/JS com a Biblioteca Bootstrap 5 e Apps Script
+Sistema Bootstrap 5 e Apps Script
 
 Playlist completa, sem cortes no desenvolvimento, da criação completa deste projeto:
 
