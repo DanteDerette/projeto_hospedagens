@@ -19,3 +19,7 @@ https://wa.me/5547996921021
 Código Completo:
 
 https://github.com/DanteDerette/projeto_hospedagens
+
+Link da Pasta para Cópia:
+
+https://drive.google.com/drive/folders/1FRp3lW5k0sQtqOm6oQf4p6mS6ot8QFc1
